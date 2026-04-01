@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/security/block-no-verify.js"
+          }
+        ],
+        "description": "Block --no-verify flag on git commands"
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/security/secrets-scan.js"
+          }
+        ],
+        "description": "Scan for hardcoded secrets before writing files"
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/security/config-protection.js"
+          }
+        ],
+        "description": "Protect linter/formatter configs from modification"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/quality/post-edit-format.js"
+          }
+        ],
+        "description": "Auto-format JS/TS files after edits"
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/quality/post-edit-typecheck.js"
+          }
+        ],
+        "description": "TypeScript check after editing .ts/.tsx files"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/dx/desktop-notify.js",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Desktop notification when Claude responds"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/dx/cost-tracker.js",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Track token usage and cost per session"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/quality/console-log-warn.js"
+          }
+        ],
+        "description": "Warn about console.log in modified files"
+      }
+    ]
+  }
+}
